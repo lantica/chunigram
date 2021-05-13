@@ -6,7 +6,7 @@ function sendMessage(chat_id, text) {
 }
 async function setWebhook() {
     const resp = await tgAPI.post("setWebhook", {
-        url: `https://quiet-dawn-71062.herokuapp.com/${process.env["TG_TOKEN"]}`
+        url: `https://chunigram.herokuapp.com/${process.env["TG_TOKEN"]}`
     })
     if (resp.data?.ok !== true) throw new Error(resp.data?.description);
 }

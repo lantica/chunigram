@@ -1,11 +1,11 @@
 (async () => {
     const axios = require("axios");
-    const { sendMessage, setWebhook } = require("./tgAPI");
+    const { sendMessage, setWebhook } = require("./telegram");
     const server = require("server");
     const { get, post } = server.router;
     const { send, json } = server.reply;
-    const { initRedis } = require("./initRedis");
-    const { timeout } = require("./utils");
+    const { initRedis } = require("./redis");
+    const { setTimeout } = require('timers/promises');
     const ee = require("events");
     const tgEmitter = new ee();
     const pg = require("pg-promise")();
@@ -26,7 +26,7 @@
         try {
             await initRedis(redisInstance);
         } catch (e) { console.warn(e) }
-        await timeout(10000);
+        await setTimeout(10000);
     }
 
     await db.connect();
@@ -85,11 +85,25 @@
                 }
                 break;
             };
-            case ("/best30details"): {
+            case ("/best30"): {
                 try {
                     const { bestSongs: { best30Songs } } = await db.one(`select "bestSongs" from "user" where "id" = $1`, chat.id);
                     const payload = Object.fromEntries(
                         best30Songs.map(({ level, name, score, rating, diffConst }) => [name, {
+                            level, score, rating, diffConst,
+                        }])
+                    );
+                    sendMessage(chat.id, JSON.stringify(payload, null, 2));
+                } catch (e) {
+                    sendMessage(chat.id, "Please update your score first!");
+                }
+                break;
+            };
+            case ("/alt10"): {
+                try {
+                    const { altSongs: { alt10Songs } } = await db.one(`select "altSongs" from "user" where "id" = $1`, chat.id);
+                    const payload = Object.fromEntries(
+                        alt10Songs.map(({ level, name, score, rating, diffConst }) => [name, {
                             level, score, rating, diffConst,
                         }])
                     );

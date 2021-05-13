@@ -34,7 +34,7 @@ async function parse(ssid, redisInstance) {
                 }
             }), level)
             ratingPage.close();
-            return playedSongs.map(calculateRating);
+            return Promise.all(playedSongs.map(calculateRating));
         }
 
         const browser = await ppt.launch({
@@ -53,20 +53,22 @@ async function parse(ssid, redisInstance) {
             const text = rating.innerText;
             return [parseFloat(text.match(currRegex)[0]), parseFloat(text.match(maxRegex)[0])];
         })
-        const allLevelSongs = [];
-        for (let diff of ["MAS", "EXP"]) {
-            const ratings = await getAllRatingForLevel(diff);
-            allLevelSongs.push(...(await Promise.all(ratings)));
-        }
+
+        const allLevelSongs = (await Promise.all(["MAS", "EXP", "ADV", "BAS"].map(diff => {
+            return getAllRatingForLevel(diff);
+        }))).flat();
         const allLevelSortedRatings = allLevelSongs.filter(p => p.diffConst).sort((a, b) => {
             return b.rating - a.rating
         });
-        const best30Songs = allLevelSortedRatings.slice(0, 30);
+        const best30Songs = allLevelSortedRatings.splice(0, 30);
         const best30Rating = best30Songs.reduce((acc, cur) => acc + cur.rating, 0) / 30;
-
-
+        const alt10Songs = allLevelSortedRatings.reduce((acc, cur) => {
+            return (acc.length < 10 && cur.diffConst + 2 > best30Rating)
+                ? acc.concat([cur])
+                : acc;
+        }, []);
         browser.close();
-        return { best30Songs, best30Rating, currRating, maxRating };
+        return { best30Songs, best30Rating, currRating, maxRating, alt10Songs };
     } catch (e) {
         console.warn(e);
         throw new Error(e);

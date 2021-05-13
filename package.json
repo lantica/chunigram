@@ -1,9 +1,9 @@
 {
-  "name": "chunithm-tools",
-  "version": "0.1.0",
+  "name": "chunigram",
+  "version": "1.0.0",
   "main": "server.js",
-  "repository": "git@github.com:lantica/chunithm-tools.git",
-  "author": "Salvanos",
+  "repository": "git@github.com:lantica/chunigram.git",
+  "author": "lantica",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
@@ -13,5 +13,9 @@
     "pg-promise": "^10.10.2",
     "puppeteer": "^8.0.0",
     "server": "^1.0.32"
+  },
+  "engines": {
+    "node": "16.x",
+    "yarn": "1.x"
   }
 }

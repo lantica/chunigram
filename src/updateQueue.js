@@ -1,5 +1,5 @@
 const Queue = require('bull');
-const { sendMessage } = require("./tgAPI");
+const { sendMessage } = require("./telegram");
 const { parse } = require('./parse');
 
 const errorMsg = "Oops, something went wrong. Please try again.\n" +
@@ -18,7 +18,7 @@ module.exports = class UpdateQueue {
                 timeout: 5 * 60 * 1000
             }
         });
-        this.queue.process(5, async (job) => {
+        this.queue.process(4, async (job) => {
             sendMessage(job.data.chat_id, "Please enter your ssid.");
             const input = await new Promise(r => this.tgEmitter.once(`${job.data.chat_id}:message`, (msg) => r(msg)));
             if (!/^[a-z0-9]{64}$/.test(input)) return Promise.reject("Invalid ssid!");
@@ -26,9 +26,9 @@ module.exports = class UpdateQueue {
             const result = await parse(input, redisInstance);
             return Promise.resolve(result);
         })
-        this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating }) => {
-            postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4, "maxRating" = $5 where "id" = $1`,
-                [job.data.chat_id, best30Rating, { best30Songs }, currRating, maxRating]
+        this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating, alt10Songs }) => {
+            postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4, "maxRating" = $5, "altSongs" = $6 where "id" = $1`,
+                [job.data.chat_id, best30Rating, { best30Songs }, currRating, maxRating, { alt10Songs }]
             );
             sendMessage(job.data.chat_id, "Updated successfully!");
         });
@@ -36,10 +36,6 @@ module.exports = class UpdateQueue {
             console.warn(`[update] Update job failed, ${job.data.chat_id}`, err);
             sendMessage(job.data.chat_id, errorMsg);
         });
-        this.queue.on("waiting", async (jobId) => {
-            const job = await this.queue.getJob(jobId);
-            sendMessage(job.data.chat_id, "Busy, please wait...");
-        })
     }
 
     addJob(data, opts) {
