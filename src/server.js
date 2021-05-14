@@ -99,7 +99,7 @@
                 }
                 break;
             };
-            case ("/alt10"): {
+            case ("/potential"): {
                 try {
                     const { altSongs: { alt10Songs } } = await db.one(`select "altSongs" from "user" where "id" = $1`, chat.id);
                     const payload = Object.fromEntries(

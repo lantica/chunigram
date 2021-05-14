@@ -1,4 +1,4 @@
 update - Input your ssid after `/update` and update your play records
 rating - Retrieve your rating provided by chunithm.net
 best30 - Retrieve your best 30 songs details
-alt10 - Retrieve 10 songs that are possible to increase the best rating
+potential - Retrieve 10 songs that are possible to increase the best rating
