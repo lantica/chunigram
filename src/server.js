@@ -113,6 +113,19 @@
                 }
                 break;
             };
+            case ("/percentile"): {
+                try {
+                    const allRating = (await db.many(`select "rating" from "user" where "rating" is not null order by "rating" asc`))
+                        .map(({ rating }) => rating);
+                    const { rating: userRating } = await db.one(`select "rating" from "user" where "id" = $1`, chat.id);
+                    const less = allRating.filter(r => r < userRating).length;
+                    const same = allRating.filter(r => r === userRating).length;
+                    sendMessage(chat.id, `Your rating is at ${Math.round((less + 0.5 * same) / allRating.length * 100)} percentile!`);
+                } catch (e) {
+                    sendMessage(chat.id, "Please update your score first!");
+                }
+                break;
+            };
             default: {
                 tgEmitter.emit(`${chat.id}:message`, text);
             };
