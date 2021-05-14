@@ -1,6 +1,6 @@
 (async () => {
     const axios = require("axios");
-    const { sendMessage, setWebhook } = require("./telegram");
+    const { sendMessage, setWebhook, sendSticker } = require("./telegram");
     const server = require("server");
     const { get, post, error } = server.router;
     const { send, json, status } = server.reply;
@@ -127,6 +127,10 @@
                 }
                 break;
             };
+            case ("/beam"): {
+                sendSticker(chat.id, "CAACAgUAAxUAAWCeScha8TFjT4VaXEno120UIOJwAAIVAAOhZV8Zq05ylhgRf8EfBA");
+                break;
+            }
             default: {
                 tgEmitter.emit(`${chat.id}:message`, text);
             };
