@@ -2,8 +2,8 @@
     const axios = require("axios");
     const { sendMessage, setWebhook } = require("./telegram");
     const server = require("server");
-    const { get, post } = server.router;
-    const { send, json } = server.reply;
+    const { get, post, error } = server.router;
+    const { send, json, status } = server.reply;
     const { initRedis } = require("./redis");
     const { setTimeout } = require('timers/promises');
     const ee = require("events");
@@ -47,6 +47,7 @@
         [
             get("/ping", () => send("pong")),
             post(`/${process.env["TG_TOKEN"]}`, botHandler),
+            error(() => status(500)),
         ]
     );
     console.log("web server inited!")
