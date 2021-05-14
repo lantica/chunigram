@@ -138,7 +138,7 @@
         axios({
             method: "GET",
             url: "https://quiet-dawn-71062.herokuapp.com/ping"
-        })
+        }).catch(r => r);
     }, 15 * 60 * 1000);
 
 })()
