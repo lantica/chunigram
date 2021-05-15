@@ -137,13 +137,4 @@
         }
         return json({});
     };
-
-    //prevent heroku sleep
-    const keepAliveTimer = setInterval(() => {
-        axios({
-            method: "GET",
-            url: "https://quiet-dawn-71062.herokuapp.com/ping"
-        }).catch(r => r);
-    }, 15 * 60 * 1000);
-
 })()

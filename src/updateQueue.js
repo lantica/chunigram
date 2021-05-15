@@ -27,7 +27,8 @@ module.exports = class UpdateQueue {
             return Promise.resolve(result);
         })
         this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating, alt10Songs }) => {
-            postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4, "maxRating" = $5, "altSongs" = $6 where "id" = $1`,
+            postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4,` +
+                `"maxRating" = $5, "altSongs" = $6, "lastUpdated" = now() where "id" = $1`,
                 [job.data.chat_id, best30Rating, { best30Songs }, currRating, maxRating, { alt10Songs }]
             );
             sendMessage(job.data.chat_id, "Updated successfully!");
