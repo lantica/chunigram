@@ -47,7 +47,7 @@
         [
             get("/ping", () => send("pong")),
             post(`/${process.env["TG_TOKEN"]}`, botHandler),
-            error(() => status(500)),
+            error(({ url, error }) => status(500).type("text/plain").send(error?.message)),
         ]
     );
     console.log("web server inited!")
@@ -89,11 +89,7 @@
             case ("/best30"): {
                 try {
                     const { bestSongs: { best30Songs } } = await db.one(`select "bestSongs" from "user" where "id" = $1`, chat.id);
-                    const payload = Object.fromEntries(
-                        best30Songs.map(({ level, name, score, rating, diffConst }) => [name, {
-                            level, score, rating, diffConst,
-                        }])
-                    );
+                    const payload = Object.fromEntries(best30Songs.map((song, idx) => [idx, song]));
                     sendMessage(chat.id, JSON.stringify(payload, null, 2));
                 } catch (e) {
                     sendMessage(chat.id, "Please update your score first!");
@@ -103,11 +99,7 @@
             case ("/potential"): {
                 try {
                     const { altSongs: { alt10Songs } } = await db.one(`select "altSongs" from "user" where "id" = $1`, chat.id);
-                    const payload = Object.fromEntries(
-                        alt10Songs.map(({ level, name, score, rating, diffConst }) => [name, {
-                            level, score, rating, diffConst,
-                        }])
-                    );
+                    const payload = Object.fromEntries(alt10Songs.map((song, idx) => [idx, song]));
                     sendMessage(chat.id, JSON.stringify(payload, null, 2));
                 } catch (e) {
                     sendMessage(chat.id, "Please update your score first!");

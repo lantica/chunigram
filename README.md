@@ -6,7 +6,7 @@ NOTE: This bot is only worked for internation version.
 Open your browser and console. (Press F12 to open the console)
 Login chunithm-net-eng.com.
 Open the `Network` tab in the console and find the request contains ssid like the screenshot below.
-![Alt text](assets/ssid.png?raw=true "ssid")
+![ssid](assets/ssid.png?raw=true "ssid")
 Copy the string after `?ssid=`.
 
 Go to the chunigram bot and send `/update` to the bot.
@@ -17,3 +17,6 @@ Enjoy~
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+## Acknowledgements
+All song data are provided by [ウニDB](https://db.chunirec.net/ "ウニDB")
