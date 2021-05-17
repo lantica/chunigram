@@ -89,8 +89,12 @@
             case ("/best30"): {
                 try {
                     const { bestSongs: { best30Songs } } = await db.one(`select "bestSongs" from "user" where "id" = $1`, chat.id);
-                    const payload = Object.fromEntries(best30Songs.map((song, idx) => [idx, song]));
-                    sendMessage(chat.id, JSON.stringify(payload, null, 2));
+                    const entries = best30Songs.map((song, idx) => [idx + 1, song]);
+                    const payload1 = Object.fromEntries(entries.slice(0, 15));
+                    const payload2 = Object.fromEntries(entries.slice(15,));
+                    sendMessage(chat.id, JSON.stringify(payload1, null, 2));
+                    await setTimeout(200);
+                    sendMessage(chat.id, JSON.stringify(payload2, null, 2));
                 } catch (e) {
                     sendMessage(chat.id, "Please update your score first!");
                 }
