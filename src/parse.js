@@ -31,16 +31,16 @@ async function parse(ssid, redisInstance) {
                     level,
                     name: song.previousElementSibling.innerText,
                     score: song.querySelector(".text_b").innerText.replace(/,/g, ""),
-                }
-            }), level)
+                };
+            }), level);
             ratingPage.close();
             return Promise.all(playedSongs.map(calculateRating));
         }
 
         const browser = await ppt.launch({
             args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
             ]
         });
         const loginPage = await browser.newPage();

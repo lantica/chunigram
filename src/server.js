@@ -1,13 +1,12 @@
 (async () => {
-    const axios = require("axios");
     const { sendMessage, setWebhook, sendSticker } = require("./telegram");
     const server = require("server");
     const { get, post, error } = server.router;
     const { send, json, status } = server.reply;
     const { initRedis } = require("./redis");
-    const { setTimeout } = require('timers/promises');
-    const ee = require("events");
-    const tgEmitter = new ee();
+    const { setTimeout } = require("timers/promises");
+    const EE = require("events");
+    const tgEmitter = new EE();
     const pg = require("pg-promise")();
     const db = pg({
         connectionString: process.env["DATABASE_URL"],
@@ -17,17 +16,12 @@
     //check redis inited and init redis queue
     const Ioredis = require("ioredis");
     const redisInstance = new Ioredis(process.env["REDIS_URL"], { enableAutoPipelining: true, connectTimeout: 10000 });
-    while (true) {
-        if (await redisInstance.get("ready") === "ready") {
-            console.log("redis ready!")
-            break
-        };
+    while (await redisInstance.get("ready") !== "ready") {
         console.warn("redis not yet inited");
-        try {
-            await initRedis(redisInstance);
-        } catch (e) { console.warn(e) }
+        await initRedis(redisInstance).catch(e => console.warn(e));
         await setTimeout(10000);
     }
+    console.log("redis ready!");
 
     await db.connect();
     try {
@@ -133,4 +127,4 @@
         }
         return json({});
     };
-})()
+})();

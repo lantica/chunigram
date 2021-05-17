@@ -12,7 +12,7 @@ function sendSticker(chat_id, sticker) {
 async function setWebhook() {
     const resp = await tgAPI.post("setWebhook", {
         url: `https://chunigram.herokuapp.com/${process.env["TG_TOKEN"]}`
-    })
+    });
     if (resp.data?.ok !== true) throw new Error(resp.data?.description);
 }
 

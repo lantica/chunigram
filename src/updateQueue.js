@@ -1,6 +1,6 @@
-const Queue = require('bull');
+const Queue = require("bull");
 const { sendMessage } = require("./telegram");
-const { parse } = require('./parse');
+const { parse } = require("./parse");
 
 const errorMsg = "Oops, something went wrong. Please try again.\n" +
     "If this message keeps appear, please contact the developer.";
@@ -25,7 +25,7 @@ module.exports = class UpdateQueue {
             await sendMessage(job.data.chat_id, "Parsing data from chunithm.net, please wait a moment");
             const result = await parse(input, redisInstance);
             return Promise.resolve(result);
-        })
+        });
         this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating, alt10Songs }) => {
             postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4,` +
                 `"maxRating" = $5, "altSongs" = $6, "lastUpdated" = now() where "id" = $1`,
@@ -42,7 +42,7 @@ module.exports = class UpdateQueue {
     addJob(data, opts) {
         this.queue.add(data, opts).catch(e => {
             sendMessage(data.chat_id, errorMsg);
-            console.warn(e)
+            console.warn(e);
         });
     }
 }
