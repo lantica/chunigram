@@ -9,7 +9,7 @@ const levelLookup = {
 
 async function parse(ssid, redisInstance) {
     try {
-        async function getAllRatingForLevel(level) {
+        async function getAllRatingForLevel(level, browser) {
             const calculateRating = ({ name, score, level }) => {
                 return new Promise(async rsov => {
                     const diffConst = parseFloat(await redisInstance.hget(name, level));
@@ -47,15 +47,15 @@ async function parse(ssid, redisInstance) {
         const initResp = await loginPage.goto(`https://chunithm-net-eng.com/mobile/?ssid=${ssid}`, { waitUntil: "networkidle0" });
         if (initResp.status() === 503) throw new Error("under maintainance");
 
-        const [currRating, maxRating] = await loginPage.$eval(".player_rating", (rating) => {
+        const [currRating, maxRating] = await loginPage.$eval(".player_rating", rating => {
             const currRegex = /(?<=RATING : ).*?(?= \/ \(MAX )/;
             const maxRegex = /(?<=MAX ).*?(?=\))/;
             const text = rating.innerText;
             return [parseFloat(text.match(currRegex)[0]), parseFloat(text.match(maxRegex)[0])];
-        })
+        });
 
         const allLevelSongs = (await Promise.all(["MAS", "EXP", "ADV", "BAS"].map(diff => {
-            return getAllRatingForLevel(diff);
+            return getAllRatingForLevel(diff, browser);
         }))).flat();
         const allLevelSortedRatings = allLevelSongs.filter(p => p.diffConst).sort((a, b) => {
             return b.rating - a.rating

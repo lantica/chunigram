@@ -6,7 +6,7 @@ function sendMessage(chat_id, text) {
 }
 
 function sendSticker(chat_id, sticker) {
-    return tgAPI.post("sendSticker", {chat_id, sticker})
+    return tgAPI.post("sendSticker", {chat_id, sticker});
 }
 
 async function setWebhook() {

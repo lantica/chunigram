@@ -18,9 +18,9 @@ module.exports = class UpdateQueue {
                 timeout: 5 * 60 * 1000
             }
         });
-        this.queue.process(4, async (job) => {
+        this.queue.process(4, async job => {
             sendMessage(job.data.chat_id, "Please enter your ssid.");
-            const input = await new Promise(r => this.tgEmitter.once(`${job.data.chat_id}:message`, (msg) => r(msg)));
+            const input = await new Promise(r => this.tgEmitter.once(`${job.data.chat_id}:message`, msg => r(msg)));
             if (!/^[a-z0-9]{64}$/.test(input)) return Promise.reject("Invalid ssid!");
             await sendMessage(job.data.chat_id, "Parsing data from chunithm.net, please wait a moment");
             const result = await parse(input, redisInstance);
@@ -45,4 +45,4 @@ module.exports = class UpdateQueue {
             console.warn(e);
         });
     }
-}
+};

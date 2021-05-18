@@ -26,7 +26,7 @@
     await db.connect();
     try {
         await db.one(`select * from information_schema.tables where "table_name" = 'user'`);
-        console.log("Postgre connected")
+        console.log("Postgre connected");
     } catch (e) {
         const initQuery = new pg.QueryFile("../sql/init.sql");
         await db.any(initQuery);
@@ -44,7 +44,7 @@
             error(({ url, error }) => status(500).type("text/plain").send(error?.message)),
         ]
     );
-    console.log("web server inited!")
+    console.log("web server inited!");
 
     // TO-DO: 
     // 1. add cache for update_id
@@ -63,7 +63,7 @@
                 }
                 updateQueue.addJob({ chat_id: chat.id }, { jobId: update_id });
                 break;
-            };
+            }
             case ("/rating"): {
                 try {
                     const { rating, maxRating, bestRating } = await db.one(
@@ -79,7 +79,7 @@
                     sendMessage(chat.id, "Please update your score first!");
                 }
                 break;
-            };
+            }
             case ("/best30"): {
                 try {
                     const { bestSongs: { best30Songs } } = await db.one(`select "bestSongs" from "user" where "id" = $1`, chat.id);
@@ -93,7 +93,7 @@
                     sendMessage(chat.id, "Please update your score first!");
                 }
                 break;
-            };
+            }
             case ("/potential"): {
                 try {
                     const { altSongs: { alt10Songs } } = await db.one(`select "altSongs" from "user" where "id" = $1`, chat.id);
@@ -103,7 +103,7 @@
                     sendMessage(chat.id, "Please update your score first!");
                 }
                 break;
-            };
+            }
             case ("/percentile"): {
                 try {
                     const allRating = (await db.many(`select "rating" from "user" where "rating" is not null order by "rating" asc`))
@@ -116,7 +116,7 @@
                     sendMessage(chat.id, "Please update your score first!");
                 }
                 break;
-            };
+            }
             case ("/beam"): {
                 sendSticker(chat.id, "CAACAgUAAxUAAWCeScha8TFjT4VaXEno120UIOJwAAIVAAOhZV8Zq05ylhgRf8EfBA");
                 break;
