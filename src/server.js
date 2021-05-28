@@ -49,13 +49,17 @@
     // TO-DO: 
     // 1. add cache for update_id
     // 2. add /start description
-    // 3. investigate to use bookmarklet to sending ssid
     async function botHandler({ data: { update_id, message: { chat, text } } }) {
         if (chat.type !== "private") {
             sendMessage(chat.id, `Sorry. This bot does not work in ${chat.type}`);
             return json({});
         }
+        console.log("[tgBot] ", chat.id, text);
         switch (text) {
+            case ("/start"): {
+                sendMessage(chat.id, "Please go to https://github.com/lantica/chunigram for usage");
+                break;
+            }
             case ("/update"): {
                 const result = await db.oneOrNone(`select "id" from "user" where "id" = $1`, chat.id);
                 if (!result) {
