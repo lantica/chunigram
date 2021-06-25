@@ -48,7 +48,6 @@
 
     // TO-DO: 
     // 1. add cache for update_id
-    // 2. add /start description
     async function botHandler({ data: { update_id, message } }) {
         if (!message) return json({});
         const { chat, text = null } = message
@@ -72,14 +71,15 @@
             }
             case ("/rating"): {
                 try {
-                    const { rating, maxRating, bestRating } = await db.one(
-                        `select "rating", "maxRating", "bestRating" from "user" where "id" = $1`,
+                    const { rating, maxRating, bestRating, standardDev } = await db.one(
+                        `select "rating", "maxRating", "bestRating", "standardDev" from "user" where "id" = $1`,
                         chat.id
                     );
                     sendMessage(chat.id, `Current Rating: ${rating}\n` +
                         `Maximum Rating: ${maxRating}\n` +
                         `Best 30 Rating: ${bestRating}\n` +
-                        `Estimated recent Rating: ${rating * 4 - bestRating * 3}\n`
+                        `Estimated recent Rating: ${rating * 4 - bestRating * 3}\n` +
+                        `Standard Deviation: ${standardDev}\n`
                     );
                 } catch (e) {
                     sendMessage(chat.id, "Please update your score first!");
@@ -103,7 +103,7 @@
             case ("/potential"): {
                 try {
                     const { altSongs: { alt10Songs } } = await db.one(`select "altSongs" from "user" where "id" = $1`, chat.id);
-                    const payload = Object.fromEntries(alt10Songs.map((song, idx) => [idx, song]));
+                    const payload = Object.fromEntries(alt10Songs.map((song, idx) => [idx + 1, song]));
                     sendMessage(chat.id, JSON.stringify(payload, null, 2));
                 } catch (e) {
                     sendMessage(chat.id, "Please update your score first!");

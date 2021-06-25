@@ -57,18 +57,27 @@ async function parse(ssid, redisInstance) {
         const allLevelSongs = (await Promise.all(["MAS", "EXP", "ADV", "BAS"].map(diff => {
             return getAllRatingForLevel(diff, browser);
         }))).flat();
+        browser.close();
         const allLevelSortedRatings = allLevelSongs.filter(p => p.diffConst).sort((a, b) => {
             return b.rating - a.rating
         });
         const best30Songs = allLevelSortedRatings.splice(0, 30);
         const best30Rating = best30Songs.reduce((acc, cur) => acc + cur.rating, 0) / 30;
+        const sd = Math.sqrt(best30Songs.reduce((acc, cur) => acc + Math.pow(cur.rating - best30Rating, 2), 0) / 29);
+        ;
         const alt10Songs = allLevelSortedRatings.reduce((acc, cur) => {
             return (acc.length < 10 && cur.diffConst + 2 > best30Rating)
                 ? acc.concat([cur])
                 : acc;
         }, []);
-        browser.close();
-        return { best30Songs, best30Rating, currRating, maxRating, alt10Songs };
+        return {
+            best30Songs: best30Songs.map(song => Object.assign(song, { standardScore: (song.rating - best30Rating) / sd })),
+            best30Rating, 
+            currRating, 
+            maxRating, 
+            alt10Songs, 
+            sd
+        };
     } catch (e) {
         console.warn(e);
         throw new Error(e);

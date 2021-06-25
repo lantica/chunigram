@@ -26,10 +26,10 @@ module.exports = class UpdateQueue {
             const result = await parse(input, redisInstance);
             return Promise.resolve(result);
         });
-        this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating, alt10Songs }) => {
+        this.queue.on("completed", (job, { best30Songs, best30Rating, currRating, maxRating, alt10Songs, sd }) => {
             postgreInstance.none(`update "user" set "bestRating" = $2, "bestSongs" = $3, "rating" = $4,` +
-                `"maxRating" = $5, "altSongs" = $6, "lastUpdated" = now() where "id" = $1`,
-                [job.data.chat_id, best30Rating, { best30Songs }, currRating, maxRating, { alt10Songs }]
+                `"maxRating" = $5, "altSongs" = $6, "standardDev" = $7, "lastUpdated" = now() where "id" = $1`,
+                [job.data.chat_id, best30Rating, { best30Songs }, currRating, maxRating, { alt10Songs }, sd]
             );
             sendMessage(job.data.chat_id, "Updated successfully!");
         });
