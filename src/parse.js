@@ -64,14 +64,14 @@ async function parse(ssid, redisInstance) {
         const best30Songs = allLevelSortedRatings.splice(0, 30);
         const best30Rating = best30Songs.reduce((acc, cur) => acc + cur.rating, 0) / 30;
         const sd = Math.sqrt(best30Songs.reduce((acc, cur) => acc + Math.pow(cur.rating - best30Rating, 2), 0) / 29);
-        ;
+        
         const alt10Songs = allLevelSortedRatings.reduce((acc, cur) => {
             return (acc.length < 10 && cur.diffConst + 2 > best30Rating)
                 ? acc.concat([cur])
                 : acc;
         }, []);
         return {
-            best30Songs: best30Songs.map(song => Object.assign(song, { standardScore: (song.rating - best30Rating) / sd })),
+            best30Songs: best30Songs.map(song => Object.assign(song, { standardScore: ((song.rating - best30Rating) / sd).toFixed(3) })),
             best30Rating, 
             currRating, 
             maxRating, 
